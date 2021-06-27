@@ -29,6 +29,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String _myName = 'Please Login';
   static const platform = const MethodChannel('ssoChannel');
+  String _webViewURL =
+      'https://preview.colorlib.com/theme/bootstrap/contact-form-02';
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +77,11 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: Text('Web Form')),
       body: Platform.isIOS
           ? UiKitView(viewType: 'FLWebView')
-          : AndroidView(viewType: 'FLWebView'),
+          : AndroidView(
+              viewType: 'FLWebView',
+              creationParams: {'url': _webViewURL},
+              creationParamsCodec: StandardMessageCodec(),
+            ),
     );
     Navigator.of(context).push(
       MaterialPageRoute(builder: (builder) => webPage, fullscreenDialog: true),
