@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:io';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +21,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String _myName = 'Please Login';
+  static const platform = const MethodChannel('ssoChannel');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,6 +38,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(_myName),
             ElevatedButton(
               onPressed: () => _showSingleSignOn(context),
               child: Text('SSO Login'),
@@ -52,15 +63,19 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(title: Text('Single Sign On')),
       body: UiKitView(viewType: 'FLSingleSignOnView'),
     );
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (builder) => ssoPage),
-    );
+    Platform.isIOS
+        ? Navigator.of(context).push(
+            MaterialPageRoute(builder: (builder) => ssoPage),
+          )
+        : _startSSO();
   }
 
   void _showWebForm(BuildContext context) {
     final webPage = Scaffold(
       appBar: AppBar(title: Text('Web Form')),
-      body: UiKitView(viewType: 'FLWebView'),
+      body: Platform.isIOS
+          ? UiKitView(viewType: 'FLWebView')
+          : AndroidView(viewType: 'FLWebView'),
     );
     Navigator.of(context).push(
       MaterialPageRoute(builder: (builder) => webPage, fullscreenDialog: true),
@@ -90,6 +105,20 @@ class HomePage extends StatelessWidget {
       },
     );
   }
+
+  Future<void> _startSSO() async {
+    String myName;
+    try {
+      final String result = await platform.invokeMethod('startSSO');
+      myName = result;
+    } on PlatformException catch (e) {
+      myName = "Failed To Login: '${e.message}'.";
+    }
+
+    setState(() {
+      _myName = myName;
+    });
+  }
 }
 
 class VAWebView extends StatefulWidget {
@@ -118,6 +147,7 @@ class _VAWebViewState extends State<VAWebView> {
       },
     );
     super.initState();
+    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
 
   @override
