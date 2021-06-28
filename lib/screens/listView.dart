@@ -10,7 +10,7 @@ class MyListView extends StatelessWidget {
       appBar: AppBar(
         title: Text('My List View'),
       ),
-      body: ListView.builder(
+      body: ListView.separated(
         itemCount: items.length,
         itemBuilder: (context, index) {
           return ListTile(
@@ -26,6 +26,7 @@ class MyListView extends StatelessWidget {
             subtitle: Text('Available at location'),
           );
         },
+        separatorBuilder: (context, i) => Divider(),
       ),
     );
   }
