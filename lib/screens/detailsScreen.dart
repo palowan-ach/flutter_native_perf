@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class DetailsScreen extends StatelessWidget {
   DetailsScreen({required this.index});
   final int index;
-  final myImage = Image.network(
-    'https://picsum.photos/200',
-  );
+
   @override
   Widget build(BuildContext context) {
+    final myImage = FadeInImage.memoryNetwork(
+      placeholder: kTransparentImage,
+      image: 'https://picsum.photos/200?image=$index',
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text('Details Screen'),
@@ -19,7 +22,11 @@ class DetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Card(
-                child: myImage,
+                child: SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: myImage,
+                ),
                 margin: EdgeInsets.all(5.0),
                 elevation: 3,
               ),
