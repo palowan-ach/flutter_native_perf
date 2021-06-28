@@ -55,7 +55,7 @@ class SSOActivity : AppCompatActivity() {
 
 
         val bundle = Bundle()
-        bundle.putString("fields","name,id,first_name,last_name,email")
+        bundle.putString("fields","name")
         graphRequest.parameters = bundle
         graphRequest.executeAsync()
 
